@@ -1,4 +1,4 @@
-# @strands-agents/model-opencode
+# @guru.prasath/model-opencode
 
 Strands Agents model provider for the OpenCode endpoints:
 
@@ -14,7 +14,7 @@ encode the base URLs.
 ## Install
 
 ```sh
-npm install @strands-agents/model-opencode
+npm install @guru.prasath/model-opencode
 ```
 
 Peer dependencies: `@strands-agents/sdk`, `openai`.
@@ -23,7 +23,7 @@ Peer dependencies: `@strands-agents/sdk`, `openai`.
 
 ```ts
 import { Agent } from '@strands-agents/sdk'
-import { opencodeZen } from '@strands-agents/model-opencode'
+import { opencodeZen } from '@guru.prasath/model-opencode'
 
 const model = opencodeZen({ modelId: 'glm-5.3' })
 const agent = new Agent({ model })
@@ -32,7 +32,7 @@ const agent = new Agent({ model })
 OpenCode Go requires a session id, sent as the `x-opencode-session` header:
 
 ```ts
-import { opencodeGo } from '@strands-agents/model-opencode'
+import { opencodeGo } from '@guru.prasath/model-opencode'
 
 const model = opencodeGo({ modelId: 'qwen3.5-plus', sessionId: process.env.OPENCODE_SESSION_ID })
 ```

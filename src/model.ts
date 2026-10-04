@@ -10,7 +10,7 @@
  * @example
  * ```ts
  * import { Agent } from '@strands-agents/sdk'
- * import { opencodeZen } from '@strands-agents/model-opencode'
+ * import { opencodeZen } from '@guru.prasath/model-opencode'
  *
  * const model = opencodeZen({ modelId: 'glm-5.3' })
  * const agent = new Agent({ model })
