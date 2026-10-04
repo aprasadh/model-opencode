@@ -1,7 +1,7 @@
 # Strands Model Provider for OpenCode Endpoints — Design
 
 **Date:** 2026-09-22
-**Package:** `@strands-agents/model-opencode`
+**Package:** `@guru.prasath/model-opencode`
 **Reference:** https://github.com/strands-agents/extension-template (TypeScript model provider skeleton)
 
 ## Purpose
