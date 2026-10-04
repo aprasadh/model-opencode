@@ -29,12 +29,12 @@ const model = opencodeZen({ modelId: 'glm-5.3' })
 const agent = new Agent({ model })
 ```
 
-OpenCode Go:
+OpenCode Go requires a session id, sent as the `x-opencode-session` header:
 
 ```ts
 import { opencodeGo } from '@strands-agents/model-opencode'
 
-const model = opencodeGo({ modelId: 'qwen3.5-plus' })
+const model = opencodeGo({ modelId: 'qwen3.5-plus', sessionId: process.env.OPENCODE_SESSION_ID })
 ```
 
 The API key is read from the `OPENCODE_API_KEY` environment variable unless

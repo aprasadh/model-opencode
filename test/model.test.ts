@@ -16,8 +16,16 @@ describe('presets', () => {
   })
 
   it('opencodeGo uses the Go base URL', () => {
-    const model = opencodeGo({ modelId: 'qwen3.5-plus' })
-    expect(model.getConfig()).toMatchObject({ baseUrl: 'https://opencode.ai/zen/go/v1', modelId: 'qwen3.5-plus' })
+    const model = opencodeGo({ modelId: 'qwen3.5-plus', sessionId: 'sess-1' })
+    expect(model.getConfig()).toMatchObject({
+      baseUrl: 'https://opencode.ai/zen/go/v1',
+      modelId: 'qwen3.5-plus',
+      sessionId: 'sess-1',
+    })
+  })
+
+  it('opencodeGo requires a sessionId', () => {
+    expect(() => opencodeGo({ modelId: 'qwen3.5-plus' })).toThrow(/sessionId/)
   })
 
   it('explicit baseUrl overrides the preset', () => {

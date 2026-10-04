@@ -37,6 +37,9 @@ export const OPENCODE_GO_BASE_URL = 'https://opencode.ai/zen/go/v1'
 /** Environment variable holding the OpenCode API key. */
 export const OPENCODE_API_KEY_ENV = 'OPENCODE_API_KEY'
 
+/** HTTP header carrying the OpenCode Go session id. */
+export const OPENCODE_SESSION_HEADER = 'x-opencode-session'
+
 /** Default model used when none is configured. Re-exported from the adapter. */
 export { DEFAULT_MODEL_ID } from './chat-adapter.js'
 
@@ -47,6 +50,13 @@ export interface OpenCodeModelConfig extends BaseModelConfig {
 
   /** API key sent as a bearer token. Defaults to the OPENCODE_API_KEY env var. */
   apiKey?: string
+
+  /**
+   * Session id for the OpenCode Go endpoint, sent as the
+   * `x-opencode-session` header. Required by OpenCode Go; unused by OpenCode
+   * Zen.
+   */
+  sessionId?: string
 
   /**
    * Extra fields merged into every request body. Provider-managed fields
@@ -72,7 +82,9 @@ export class OpenCodeModel extends Model<OpenCodeModelConfig> {
   }
 
   override updateConfig(modelConfig: Partial<OpenCodeModelConfig>): void {
-    const clientInvalidated = modelConfig.baseUrl !== undefined && modelConfig.baseUrl !== this._config.baseUrl
+    const clientInvalidated =
+      (modelConfig.baseUrl !== undefined && modelConfig.baseUrl !== this._config.baseUrl) ||
+      (modelConfig.sessionId !== undefined && modelConfig.sessionId !== this._config.sessionId)
     this._config = { ...this._config, ...modelConfig }
     if (clientInvalidated) this._client = undefined
   }
@@ -84,9 +96,14 @@ export class OpenCodeModel extends Model<OpenCodeModelConfig> {
   private get client(): OpenAI {
     if (!this._client) {
       const apiKey = this._config.apiKey ?? process.env[OPENCODE_API_KEY_ENV] ?? ''
+      const sessionId = this._config.sessionId
       this._client = new OpenAI({
         apiKey,
         baseURL: this._config.baseUrl,
+        ...(sessionId !== undefined &&
+          sessionId !== '' && {
+            defaultHeaders: { [OPENCODE_SESSION_HEADER]: sessionId },
+          }),
       })
     }
     return this._client
@@ -144,9 +161,15 @@ export function opencodeZen(config: Omit<OpenCodeModelConfig, 'baseUrl'> & { bas
 /**
  * Creates a model configured for the OpenCode Go endpoint.
  *
- * @param config - Model config; `baseUrl` defaults to the Go endpoint and
- *   `apiKey` defaults to the `OPENCODE_API_KEY` environment variable.
+ * @param config - Model config; `baseUrl` defaults to the Go endpoint,
+ *   `apiKey` defaults to the `OPENCODE_API_KEY` environment variable, and
+ *   `sessionId` is required (sent as the `x-opencode-session` header).
  */
 export function opencodeGo(config: Omit<OpenCodeModelConfig, 'baseUrl'> & { baseUrl?: string }): OpenCodeModel {
+  if (!config.sessionId) {
+    throw new Error(
+      'opencodeGo requires a sessionId; it is sent as the x-opencode-session header and is mandatory for the Go endpoint',
+    )
+  }
   return new OpenCodeModel({ baseUrl: OPENCODE_GO_BASE_URL, ...config })
 }
