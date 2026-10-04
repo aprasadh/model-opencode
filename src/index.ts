@@ -1,5 +1,5 @@
 /**
- * Public entry point for @strands-agents/model-opencode.
+ * Public entry point for @guru.prasath/model-opencode.
  */
 
 export {
