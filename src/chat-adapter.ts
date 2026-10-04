@@ -245,7 +245,8 @@ export function mapChunkToEvents(
       totalTokens: chunk.usage.total_tokens ?? promptTokens + completionTokens,
       ...(cached !== undefined && { cacheReadInputTokens: cached }),
     }
-    return events
+    // Some providers (e.g. OpenCode Go) attach usage to content-bearing chunks,
+    // so keep processing choices below instead of returning early.
   }
 
   if (!chunk.choices || chunk.choices.length === 0) return events

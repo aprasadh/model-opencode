@@ -222,6 +222,23 @@ describe('mapChunkToEvents', () => {
     expect((evts.at(-1) as { stopReason: string }).stopReason).toBe('toolUse')
   })
 
+  it('records usage AND emits content when a single chunk carries both', () => {
+    const state = { ...{ messageStarted: false, textBlockStarted: false, activeToolCalls: new Set<number>() } }
+    const usageAcc: UsageAccumulator = {}
+    const events = mapChunkToEvents(
+      {
+        choices: [{ delta: { content: 'Hi' }, finish_reason: null }],
+        usage: { prompt_tokens: 88, completion_tokens: 23, total_tokens: 111 },
+      },
+      state as never,
+      usageAcc,
+    )
+
+    expect(events.map((e) => e.type)).toEqual(['modelContentBlockStartEvent', 'modelContentBlockDeltaEvent'])
+    expect((events[1] as { delta: { text: string } }).delta.text).toBe('Hi')
+    expect(usageAcc.usage?.totalTokens).toBe(111)
+  })
+
   it('captures usage from final chunk and emits no content events', () => {
     const state = { ...{ messageStarted: false, textBlockStarted: false, activeToolCalls: new Set<number>() } }
     const usageAcc: UsageAccumulator = {}
